@@ -3,9 +3,11 @@ import Layout from '../layout/Layout'
 import Link from "next/link"
 import styles from '../styles/Form.module.css';
 import { useFormik } from 'formik';
+import {registerValidate} from '../lib/Validate'
+import { useRouter } from "next/router";
 
 export default function Register() {
-  
+  const router = useRouter()
 	const formik = useFormik({
 		initialValues:{
 			username:'',
@@ -13,11 +15,22 @@ export default function Register() {
 			password:'',
 			cpassword:''
 		},
+		validate:registerValidate,
 		onSubmit
 	})
   
 	async function  onSubmit(values) {
-    console.log(values)
+    const options ={
+			method:"POST",
+			headers:{'Content-Type':'application/json'},
+			body:JSON.stringify(values)
+		}
+		await fetch('http://localhost:3000/api/auth/signup',options)
+		  .then(res => res.json())
+			.then((data)=>{
+				if(data)router.push('http://localhost:3000')
+
+			})
 	}
 	 
 	return (
@@ -41,6 +54,8 @@ export default function Register() {
 
 					/>
 				</div>
+				{formik.errors.username &&formik.touched.username ? <span className="text-rose-500">{formik.errors.username}</span> : <></>}
+
 				<div className={styles.input_group}>
 				<input 
 					type="email"
@@ -50,6 +65,8 @@ export default function Register() {
 					 {...formik.getFieldProps('email')}
 					/>
 				</div>
+				{formik.errors.email &&formik.touched.email ? <span className="text-rose-500">{formik.errors.email}</span> : <></>}
+
 				<div className={styles.input_group}>
 					<input 
 					type="password"
@@ -60,16 +77,19 @@ export default function Register() {
 
 					/>
 				</div>
+				{formik.errors.password &&formik.touched.password ? <span className="text-rose-500">{formik.errors.password}</span> : <></>}
+
 				<div className={styles.input_group}>
 					<input 
 					type="password"
-					name="password"
+					name="cpassword"
 					placeholder="Confirm password"
 					className={styles.input_text}
 					{...formik.getFieldProps('cpassword')}
-
 					/>
 				</div>
+				{formik.errors.cpassword &&formik.touched.cpassword ? <span className="text-rose-500">{formik.errors.cpassword}</span> : <></>}
+
 				{/*login button */}
 				<div className={styles.button}>
 					<button type="submit">

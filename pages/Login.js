@@ -4,17 +4,31 @@ import Link from "next/link"
 import styles from '../styles/Form.module.css';
 import { signIn, signOut } from "next-auth/react"
 import { useFormik } from 'formik';
- export default function Login() {
+import login_validate from '../lib/Validate'
+import { useRouter } from "next/router";
 
+
+ export default function Login() {
+	 const router =useRouter()
+   //formik hook
 	const formik = useFormik({
 		initialValues:{
 			email:'',
 			password:''
 		},
+		validate:login_validate,
  		onSubmit
 	})
  	async function onSubmit(values){
-		console.log(values)
+		const status = await signIn('credentials',{
+			redirect:false,
+			email:values.email,
+			password:values.password,
+			callbackUrl:"/"
+		})
+		
+    if(status.ok)router.push(status.url)
+
 	}
 //handleGoogleSignin
  async function handleGoogleSignin(){
@@ -42,6 +56,7 @@ import { useFormik } from 'formik';
 					 {...formik.getFieldProps('email')}
 					/>
 				</div>
+				{formik.errors.email &&formik.touched.email ? <span className="text-rose-500">{formik.errors.email}</span> : <></>}
  				<div className={styles.input_group}>
 					<input 
 					type="password"
@@ -51,7 +66,8 @@ import { useFormik } from 'formik';
 					{...formik.getFieldProps('password')} 
 					/>
 				</div>
- 
+				{formik.errors.password &&formik.touched.password ? <span className="text-rose-500">{formik.errors.password}</span> : <></>}
+
 				{/*login button */}
 				<div className={styles.button}>
 					<button type="submit">
