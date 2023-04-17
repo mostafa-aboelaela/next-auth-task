@@ -16,7 +16,7 @@ export default function Register() {
 			cpassword:''
 		},
 		validate:registerValidate,
-		onSubmit
+		onSubmit 
 	})
   
 	async function  onSubmit(values) {

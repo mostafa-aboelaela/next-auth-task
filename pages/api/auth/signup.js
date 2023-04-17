@@ -10,7 +10,7 @@ export default async function handler(req,res){
 
 if(req.method==='POST'){
 
-	if(req.body)return res.status(404).json({error:"Don't hsve form date...!"});
+	if(!req.body)return res.status(404).json({error:"Don't hsve form date...!"});
     const {username,email,password}= req.body;
      //check duplicate user 
 		 const checkexisting=await Users.findOne({email});
